@@ -1,0 +1,477 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class Volunteer : StaffMember
+    {
+        int amount;
+
+        public int Amount { get => amount; set => amount = value; }
+
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine($"Amount is {Amount}");
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class StaffMember
+    {
+        private int id;
+        private string name;
+        private string phone;
+        private string email;
+        Department department;
+        public StaffMember(int id , string name , string phone , string email , Department department)
+        {
+            this.id = id;
+            this.name = name;
+            this.phone = phone;
+            this.email = email;
+            this.Department =  new Department(department.Id , department.Name);
+        }
+
+        public int Id { get => id; set => id = value; }
+        public string Name { get => name; set => name = value; }
+        public string Phone { get => phone; set => phone = value; }
+        public string Email { get => email; set => email = value; }
+        internal Department Department { get => department; set => department = value; }
+
+        public StaffMember()
+        {
+
+        }
+        public virtual void Print() =>
+  Console.WriteLine($"ID is : {Id}\nName is : {Name}\nPhone is :" +
+      $" {Phone}\nEmail is : {Email}\nDepartment Id is : {Department.Id}");
+        public virtual double PayRoll()
+        {
+            return 0;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class Staff
+    {
+        List<Employee> employees;
+        static int countEmployees;
+        static Staff()
+        {
+            countEmployees = 0;
+        }
+        public Staff()
+        {
+            employees = new List<Employee>();
+
+        }
+        public void AddEmployee()
+        {
+            Console.Write("id is : ");
+            int.TryParse(Console.ReadLine() , out int id);
+            Console.Write("social Security is : ");
+            int.TryParse(Console.ReadLine(), out int socialSecurity);
+            Console.Write("name is : ");
+            string name = Console.ReadLine();
+            Console.Write("phone is : ");
+            string phone = Console.ReadLine();
+            Console.Write("email is : ");
+            string email = Console.ReadLine();
+            Console.Write("dept Id is : ");
+            int.TryParse(Console.ReadLine(), out int deptId);
+            Console.Write("dept Name is : ");
+            string deptName = Console.ReadLine();
+            Department department = new Department(deptId, deptName);
+            Employee emp = employees.FirstOrDefault(a => a.Id == id || a.Phone == phone ||
+            a.Email == email || a.SocialSecurityNumber == socialSecurity );
+            if ( emp == null)
+            {
+            employees.Add(new Employee(id, name, phone, email, department, socialSecurity));
+                countEmployees++;
+            }
+            else
+             Console.WriteLine("Some Data Are Duplicated"); 
+        }
+        private void MakeEditChoice(ref Employee emp)
+        {
+            Console.WriteLine("1-Edit Id\n2-Edit email\n3-Edit phone\n4-Edit name\n" +
+                "Edit Department\n6-Edit socialSecurity");
+            int.TryParse (Console.ReadLine(), out int choice);
+            switch (choice)
+            {
+                case 1:
+                    Console.Write("id is : ");
+                    int.TryParse(Console.ReadLine(), out int id);
+                    emp.Id = id;
+                    break;
+                case 2:
+                    Console.Write("Email is : ");
+                    string email = Console.ReadLine();
+                    emp.Email = email;
+                    break;
+                case 3:
+                    Console.Write("phone is : ");
+                    string phone = Console.ReadLine();
+                    emp.Phone = phone;
+                    break;
+                case 4:
+                    Console.Write("Name is : ");
+                    string name = Console.ReadLine();
+                    emp.Name = name;
+                    break;
+                case 5:
+                    Console.Write("Department id is : ");
+                    int.TryParse(Console.ReadLine(), out int deptId);
+                    Console.Write("Department name is : ");
+                    string deptName = Console.ReadLine();
+                    emp.Department= new Department(deptId , deptName );
+                    break;
+                case 6:
+                    Console.Write("social security is : ");
+                    int.TryParse(Console.ReadLine(), out int social);
+                    emp.SocialSecurityNumber = social;
+                    break;
+                default:
+                    break;
+            }
+
+        }
+        public void EditEmployee()
+        {
+            Console.Write("id you wanna edit is : ");
+            int.TryParse(Console.ReadLine(), out int id);
+            Employee emp = MatchedEmp(id);
+            if (emp == null)
+                Console.WriteLine("id is not found");
+            else
+                MakeEditChoice(ref emp);
+
+        }
+        public void DeleteEmployee()
+        {
+            Console.Write("id you wanna delete is : ");
+            int.TryParse(Console.ReadLine(), out int id);
+            Employee emp = MatchedEmp(id);
+            if (emp == null)
+                Console.WriteLine("id is not found");
+            else
+            {
+                employees.Remove(emp);
+                countEmployees--;
+            }
+        }
+        public Employee MatchedEmp(int id) => employees.FirstOrDefault(a=> a.Id == id);
+        public void PrintAllEmployees()
+        {
+            foreach (Employee emp in employees)
+                emp.Print();
+        }
+        public double CallPayRoll()
+        {
+            double res = 0;
+            foreach (Employee emp in employees)
+                res += emp.PayRoll();
+            return res;
+        }
+
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class SalaryEmployee : Employee
+    {
+        int salary;
+
+        public int Salary { get => salary; set => salary = value; }
+
+        public override double PayRoll() => Salary;
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine($"Type is : Salary Employee");
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class Project
+    {
+        int id;
+        string Location;
+        double currentCost;
+        Manager manager;
+        List<Budget> budgets;
+        public Project(Manager manager)
+        {
+            budgets = new List<Budget>();
+            this.manager = manager;
+        }
+
+        public double CurrentCost { get => currentCost; set => currentCost = value < 0 ? 0 : value; }
+        public int Id { get => id; set => id = value; }
+        public string Location1 { get => Location; set => Location = value; }
+
+        public double CalcTotalBudgets()
+        {
+            double totalBudget = 0;
+            foreach (Budget b in budgets)
+                totalBudget += b.Value;
+            return totalBudget;
+        }
+        public void Print()
+        {
+            Console.WriteLine($"id is {Id}\nlocation is {Location1}\ncost is {CurrentCost}" +
+                $"manager name is {manager.Name}");
+            foreach (Budget b in budgets)
+                Console.WriteLine(b.Value);
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class Manager : Employee
+    {
+        public Manager(int id, string name, string phone, string email,
+            Department department, int socialSecurityNumber) : base(id , name , phone , email
+                , department , socialSecurityNumber)
+        { }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class HourlyEmployee : Employee
+    {
+        int rate;
+        int hours;
+
+        public int Rate { get => rate; set => rate = value; }
+        public int Hours { get => hours; set {
+                if (value < 0 || value > 24) hours = 0;
+                else 
+                hours = value; }
+        }
+
+        public override double PayRoll()=> Rate * Hours;
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine($"Type is : Hourly Employee");
+        }
+
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class ExecutiveEmployee : Employee
+    {
+        int salary;
+        int bonus;
+
+        public int Salary { get => salary; set => salary = value; }
+        public int Bonus { get => bonus; set => bonus = value; }
+
+        public override double PayRoll() => Salary * Bonus;
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine($"Type is : Executive Employee");
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class Employee : StaffMember
+    {
+         int socialSecurityNumber;
+        public Employee() { }
+        public Employee(int id, string name, string phone, string email, 
+            Department department ,int socialSecurityNumber) : base(id , name , phone , email ,department)
+        {
+            this.socialSecurityNumber = socialSecurityNumber;
+        }
+
+        public int SocialSecurityNumber { get => socialSecurityNumber; set => socialSecurityNumber = value; }
+
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine($"Social Security Number is {SocialSecurityNumber}");
+        }
+
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class Department
+    {
+        int id;
+        string name;
+        public Department() { }
+        public Department(int id ,string name)
+        {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int Id { get => id; set => id = value; }
+        public string Name { get => name; set => name = value; }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class CommisionEmployee : Employee
+    {
+        int target;
+
+        public int Target { get => target; set => target = value; }
+
+        public override double PayRoll() => Target * 0.05;
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine($"Type is : Commision Employee");
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal class Budget
+    {
+        int id;
+        int value;
+
+        public int Value { get => value; set => this.value = value; }
+        public int Id { get => id; set => id = value; }
+
+        public void IncreaseBudget(int AddValue) => Value += AddValue < 0 ? 0 : AddValue;
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmployeeManagement
+{
+    internal static class AllDepartments
+    {
+        static List<Department> departments;
+        static int countDepartments;
+        static AllDepartments()
+        {
+            countDepartments = 0;
+            departments = new List<Department>();
+        }
+        public static void AddDepartment()
+        {
+            Console.Write("id is : ");
+            int.TryParse(Console.ReadLine(), out int id);
+            Console.Write("name is : ");
+            string name = Console.ReadLine();
+            if(id == 0 || IsFound(id, name))
+              Console.WriteLine("Some Data Are Duplicated");
+            else
+            {
+                departments.Add(new Department(id, name));
+                countDepartments++;
+            }
+        }
+        public static bool IsFound(int id , string name)
+        {
+            Department dept = departments.FirstOrDefault(a => a.Id == id || a.Name == name);
+            if (dept == null)
+                return false;
+            return true;
+
+        }
+        public static void PrintAllDepartments()
+        {
+            foreach (Department dept in departments)
+            {
+                Console.WriteLine($"id is : {dept.Id}\nname is : {dept.Name}");
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
